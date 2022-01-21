@@ -2,5 +2,5 @@
 .DS_Store
 config
 __pycache__
-target/*
-result/*
+source/target/*
+source/result/*
