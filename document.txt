@@ -1,0 +1,12 @@
+
+#コンテナをビルド
+docker compose up -d --build
+
+#コンテナに接続
+docker compose exec python3 bash
+
+#フォルダ移動
+cd source
+
+#pythonを実行
+python app.py
