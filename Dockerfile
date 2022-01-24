@@ -17,3 +17,5 @@ RUN pip install --upgrade setuptools
 RUN python -m pip install jupyterlab
 RUN python -m pip install numpy
 RUN python -m pip install pyinstaller
+RUN python -m pip install pandas
+RUN python -m pip pip install openpyxl
