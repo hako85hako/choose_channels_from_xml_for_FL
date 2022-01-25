@@ -1,4 +1,7 @@
 
+#フォルダ移動
+cd /Users/sakaiyuunin/Documents/Docker_Project/choose_channel
+
 #コンテナをビルド
 docker compose up -d --build
 
