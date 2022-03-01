@@ -5,15 +5,13 @@ import pandas as pd
 import re
 import openpyxl
 
-def main():
+def main(target_xlsm):
     # 初期設定 ####################################################
-    target_xlsm = glob(f'sample/*.xlsm')[0]
-    
     # 列指定offset
     row_offset = 12
 
     # データのあるシートを指定
-    pattern_1 = r'\'Sheet1\''
+    pattern_1 = r'\'data_set\''
     repatter_1 = re.compile(pattern_1)
     # データのカラム名を指定
     
@@ -44,7 +42,8 @@ def main():
     #lenでシートの総数を確認
     num_sheet = len(input_file_name)
     #DataFrame
-    keyword_df = input_file.parse('key_data',index_col=0)
+    keyword_df = input_file.parse(input_file_name[2],index_col=0)
+    keyword_df.fillna('--')
     #dict
     keyword_dict = keyword_df.to_dict()
     # keyword 取り出し
@@ -53,38 +52,49 @@ def main():
     old_file_offset =  keyword_dict['old_file_offset']['item']
     new_file_offset =  keyword_dict['new_file_offset']['item']
 
+    keywords = [ site_id,site_password,old_file_offset,new_file_offset ]
     #DataFrame
-    dataset_df = input_file.parse('data_set',index_col=0)
+    dataset_df = input_file.parse(input_file_name[1],index_col=0)
+    dataset_df.fillna('--')
     #dict
     dataset_dict = dataset_df.to_dict()
     # list型でデータ取り出し
     datas = list()
-    old_lens        =  dataset_df.loc[:,'old_len'].values.tolist()
+    none_old = 0
+    none_new = 0
+    none_shift = 0
+    new_lens        =  dataset_df.loc[:,'new_len'].values.tolist()
     count_i = 1
-    for count_i in range(len(old_lens)):
-        print(count_i)
+    for count_i in range(len(new_lens)):
         count_i += 1
         datas           += [dataset_df.loc[count_i].values.tolist()]
-        
-    print(datas)#データセットを取得するとこまでできてる
+        try:
+            #旧サイトの番号をintに変換
+            datas[count_i-1][0] = int(datas[count_i-1][0])
+        except:
+            datas[count_i-1][0] == "--"
+            none_old += 1
+        try:
+            #新サイトの番号をintに変換
+            datas[count_i-1][3] = int(datas[count_i-1][3])
+        except:
+            none_new += 1
+        try:
+            #入れ替え用の番号をintに変換
+            datas[count_i-1][6] = int(datas[count_i-1][6])
+        except:
+            datas[count_i-1][6] = '--'
+            none_shift += 1
+    #print(datas)#データセットを取得するとこまでできてる
+    #print(none_old)
+    #print(none_new)
+    #print(none_shift)
+    #print(keywords)
 
-
-
-    # old_lens        =  dataset_df.loc[:,'old_len'].values.tolist()
-    # old_slopes      =  dataset_df.loc[:,'old_slope'].values.tolist()
-    # old_intercepts  =  dataset_df.loc[:,'old_intercept'].values.tolist()
-    
-    # new_lens        =  dataset_df.loc[:,'new_len'].values.tolist()
-    # new_slopes      =  dataset_df.loc[:,'new_slope'].values.tolist()
-    # new_intercepts  =  dataset_df.loc[:,'new_intercept'].values.tolist()
-
-    # old_slopes    =  dataset_df.loc[:,'old_slope'].values.tolist()
-    # new_lens      =  dataset_df.loc[:,'new_len'].values.tolist()
-    # new_slopes    =  dataset_df.loc[:,'new_slope'].values.tolist()
-
-
-
-
-
+    all_data = [keywords,datas]
+    print(all_data)
+ 
+    return all_data
 if __name__=="__main__":
-   main()
+    target_xlsm = glob(f'sample/*.xlsm')[0]
+    main(target_xlsm)

@@ -10,15 +10,6 @@ import frame
 
 def main(old_xlsx,new_xlsx,target_xlsm):
     # 初期設定 ####################################################
-    # ファイル指定
-    # target_xmlx = f'target/*.xlsx'
-    # target_xlsx_names = glob(f'sample/*.xlsx')
-    # old_xlsx = target_xlsx_names[0]
-    # new_xlsx = target_xlsx_names[0]
-    
-    # target_xlsm = f'*.xlsm'
-    # target_xlsm = glob(f'sample/*.xlsm')[0]
-
     # old_flg
     first_flg = 0
 
@@ -52,7 +43,6 @@ def main(old_xlsx,new_xlsx,target_xlsm):
     #############################################################
     try:
         #ファイル指定
-        #target_xlsx_names = glob(target_xmlx)
         target_xlsx_names = []
         if not old_xlsx and not new_xlsx:
             raise Exception(not_found_target_file)
@@ -106,10 +96,7 @@ def main(old_xlsx,new_xlsx,target_xlsm):
             target_xlsm_name = target_xlsm
             #print(target_xlsm_name)
             if not target_xlsm_name:
-                raise Exception(not_found_write_file)
-            # if len(target_xlsm_name)>1:
-            #     raise Exception(write_file_two_or_more)
-
+                raise Exception(not_found_write_file)　
 
             #書き込み用のExcel指定
             # ワークブック作成
@@ -176,5 +163,5 @@ def main(old_xlsx,new_xlsx,target_xlsm):
         print(ex)
         frame.TkinterClass.call_except_in_app(ex)
         return False
-#if __name__=="__main__":
-#   app()
+if __name__=="__main__":
+   main()
