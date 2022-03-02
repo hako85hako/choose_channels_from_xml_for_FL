@@ -3,20 +3,22 @@ import csv
 import frame
 from glob import glob
 
-
-
-#test
-import get_select_ch
+import frame
 
 def main(dir_name,all_data,none_select_column,none_valiable_column):
+    #初期設定
+    faile_ch_exchange = 'チャンネル置換中にエラーが発生しました'
+    not_read_file = 'CSVファイルを読み込めません'
+    offset_write_error = 'offset部分の書き込みでエラーが発生しました'
+    faile_write_file = 'CSV書き込み中にエラーが発生しました'
+    correct_replace =  '完了しました。\n内容を確認してください。' 
     #data以下のファイル格納場所
     files = glob(f'{dir_name}/data/*')
     #各種値格納
     old_file_offset = all_data[0][2] 
     new_file_offset = all_data[0][3]
     password = all_data[0][1]
-    #none_valiable_column = 0
-    #none_select_column = 0 
+
     for file in files:
         data = []
         #ファイル名作成用########################################################
@@ -32,8 +34,11 @@ def main(dir_name,all_data,none_select_column,none_valiable_column):
          #編集用パス指定
         csv_paths = glob(f'{file}/*.csv')
         for csv_path in csv_paths:
-            #csv読み込み
-            f = open(csv_path, 'r')
+            try:
+                #csv読み込み
+                f = open(csv_path, 'r')
+            except:
+                return frame.show_error(not_read_file)
             #headerの取得
             header = next(f)
             #リスト形式
@@ -42,18 +47,21 @@ def main(dir_name,all_data,none_select_column,none_valiable_column):
             for row in f:
                 #結果の入子
                 items = []
-                for i in range(int(old_file_offset)):
-                    #offset8→7の場合
-                    if old_file_offset > new_file_offset:
-                        if i == 8 :
-                            break
-                    item = row[i]
-                    items += [item]
-                    #offset7→8の場合
-                    if old_file_offset < new_file_offset:
-                        if i == 7 :
-                            item = ""
-                            items += [item]
+                try:
+                    for i in range(int(old_file_offset)):
+                        #offset8→7の場合
+                        if old_file_offset > new_file_offset:
+                            if i == 8 :
+                                break
+                        item = row[i]
+                        items += [item]
+                        #offset7→8の場合
+                        if old_file_offset < new_file_offset:
+                            if i == 7 :
+                                item = ""
+                                items += [item]
+                except:
+                    return frame.show_error(offset_write_error)
 
                 for ch in all_data[1]:
                     #各種値格納
@@ -92,21 +100,29 @@ def main(dir_name,all_data,none_select_column,none_valiable_column):
                         else:
                             item = none_select_column
                     except:
-                        raise ValueError("入れ替え時error") 
+                        return frame.show_error(faile_ch_exchange)
                         item = none_valiable_column
                     items += [item]
                 data += [items]
 
-        data.insert(0, [FL_ID,password])
-        path = dir_name+'/'+dirname+'.csv'
-        f = open(path, 'w',newline="")
-        writer = csv.writer(f)
-        writer.writerows(data)
-        f.close()
-    
-if __name__=="__main__":
-    target_xlsm = glob(f'sample/*.xlsm')[0]
-    all_data = get_select_ch.main(target_xlsm)
-    dir_name = 'C:/Users/sakai/Desktop/Project/choose_channel/source/sample/test'
-    print(dir_name)
-    main(dir_name,all_data,0,0)
+        try:
+            data.insert(0, [FL_ID,password])
+            path = dir_name+'/'+dirname+'.csv'
+            f = open(path, 'w',newline="")
+            writer = csv.writer(f)
+            writer.writerows(data)
+        except:
+            return frame.show_error(faile_write_file)
+        finally:
+            f.close()
+        
+    return frame.show_info(correct_replace)
+
+
+# test用
+# if __name__=="__main__":
+#     target_xlsm = glob(f'sample/*.xlsm')[0]
+#     all_data = get_select_ch.main(target_xlsm)
+#     dir_name = 'C:/Users/sakai/Desktop/Project/choose_channel/source/sample/test'
+#     print(dir_name)
+#     main(dir_name,all_data,0,0)

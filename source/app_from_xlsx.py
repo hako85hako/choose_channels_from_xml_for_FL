@@ -13,13 +13,13 @@ def main(old_xlsx,new_xlsx,target_xlsm):
     # old_flg
     first_flg = 0
 
-
     # 列指定offset
     row_offset = 12
 
     # データのあるシートを指定
     pattern_1 = r'\'【SQL】tbl_datarelation\(構造\)\''
     repatter_1 = re.compile(pattern_1)
+    
     # データのカラム名を指定
     column_1 = 'comment'
     column_2 = 'columnno'
@@ -29,13 +29,17 @@ def main(old_xlsx,new_xlsx,target_xlsm):
     # IDとpasswordの情報があるシートを指定 
     pattern_2 = r'\'【SQL】tbl_comdevicies\''
     repatter_2 = re.compile(pattern_2)
+    
     # データのカラム名を指定
     column_5 = 'comid'
     column_6 = 'password'
 
+    #新旧サイト判定
+    before = 'before'
+    after = 'after'
 
     # Exception_text
-    not_found_target_file = 'targetファイル内に.xlsxがありません'
+    not_found_target_file = '指定されたファイルがありません'
     not_correct_target_file = '正しい.xlsxファイルを指定してください'
     not_found_write_file = '書き込む.xlsmファイルがありません'
     write_file_two_or_more = '書き込み対象の.xlsmファイルが2個以上存在します'
@@ -45,7 +49,8 @@ def main(old_xlsx,new_xlsx,target_xlsm):
         #ファイル指定
         target_xlsx_names = []
         if not old_xlsx and not new_xlsx:
-            raise Exception(not_found_target_file)
+            frame.show_error(not_found_target_file)
+            return False
         else:
             target_xlsx_names += [old_xlsx]
             target_xlsx_names += [new_xlsx]
@@ -85,32 +90,32 @@ def main(old_xlsx,new_xlsx,target_xlsm):
                     get_datas = dict()
                     if first_flg == 1:
                         #ch順にソート
-                        get_datas['before'] = sorted(datas.items())
+                        get_datas[before] = sorted(datas.items())
                     else :
                         #ch順にソート
-                        get_datas['after'] = sorted(datas.items())
+                        get_datas[after] = sorted(datas.items())
             if count_target_sheet == 0:
-                raise Exception(not_correct_target_file)
+                frame.show_error(not_correct_target_file)
+                return False
 
             # 書き込み用.xlsm指定
             target_xlsm_name = target_xlsm
-            #print(target_xlsm_name)
             if not target_xlsm_name:
-                raise Exception(not_found_write_file)　
+                frame.show_error(not_found_write_file)
+                return False
 
             #書き込み用のExcel指定
             # ワークブック作成
             wb = openpyxl.Workbook()
             # ワークブックの読み込み
-            # wb = openpyxl.load_workbook(target_xlsm_name[0])
             wb = openpyxl.load_workbook(target_xlsm_name,keep_vba=True)
             # 読み込んだブックのシート選択
             sheet = wb.worksheets[0]
 
             # 書き込み処理
             index = 0 
-            if 'before' in get_datas:
-                for get_data in get_datas['before']:
+            if before in get_datas:
+                for get_data in get_datas[before]:
                     if index == 0:
                         offset_data = get_data[1][column_2]
                     index += 1
@@ -121,16 +126,14 @@ def main(old_xlsx,new_xlsx,target_xlsm):
                 sheet.cell(column=24, row=11, value=offset_data)
                 # 保存
                 wb.save(target_xlsm_name)
-                # wb.save(target_xlsm_name[0])
-            elif 'after' in get_datas:          
+            elif after in get_datas:          
                 #xls book Open (xls, xlsxのどちらでも可能)
                 input_book = pd.ExcelFile(target_xlsx_name)
                 
                 
                 #sheet_namesメソッドでExcelブック内の各シートの名前をリストで取得できる
                 input_sheet_names = input_book.sheet_names
-                #print (input_sheet_names)
-                id = ""
+                FL_ID = ""
                 password = ""
                 for input_sheet_name in input_sheet_names:
                     result = repatter_2.match(repr(input_sheet_name))
@@ -138,10 +141,10 @@ def main(old_xlsx,new_xlsx,target_xlsm):
                     if result:
                         #dict型で格納
                         df_sheet_multi = pd.read_excel(target_xlsx_name, sheet_name=[input_sheet_name])
-                        id = df_sheet_multi[input_sheet_name][column_5][0]
+                        FL_ID = df_sheet_multi[input_sheet_name][column_5][0]
                         password = df_sheet_multi[input_sheet_name][column_6][0]    
 
-                for get_data in get_datas['after']:
+                for get_data in get_datas[after]:
                     if index == 0:
                         offset_data = get_data[1][column_2]
                     index += 1
@@ -149,19 +152,21 @@ def main(old_xlsx,new_xlsx,target_xlsm):
                     sheet.cell(column=16, row=(row_offset+index), value=get_data[1][column_1])
                     sheet.cell(column=24, row=(row_offset+index), value=round(get_data[1][column_3],3))
                     sheet.cell(column=25, row=(row_offset+index), value=round(get_data[1][column_4],3))
-                sheet.cell(column=5, row=2, value=id)
+                sheet.cell(column=5, row=2, value=FL_ID)
                 sheet.cell(column=12, row=2, value=password)
                 sheet.cell(column=12, row=11, value=offset_data)
                 # 保存
-                #wb.save(target_xlsm_name[0])
                 wb.save(target_xlsm_name)
             else:
-                raise Exception(unexpected_error)
+                frame.show_error(unexpected_error)
+                return False
         return True
     except:
         ex = traceback.format_exc()
         print(ex)
         frame.TkinterClass.call_except_in_app(ex)
         return False
-if __name__=="__main__":
-   main()
+
+#テスト用
+# if __name__=="__main__":
+#    main()

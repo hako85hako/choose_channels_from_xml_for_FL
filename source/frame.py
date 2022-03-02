@@ -18,6 +18,18 @@ import get_select_ch
 
 class TkinterClass:
     def __init__(self):
+        #簡易手順の中身
+        
+        m1 = '① 本番用FDSManagerから出力した「.xlsx」ファイルを旧サイト、新サイト共に指定する'
+        m2 = '② 以下のPathより「ch_list.xlsm」をローカルにコピーし、書き込み用「.xlsm」に指定する'
+        m3 = '/fl1/share/部署別フォルダー/技術・生産管理/社員（協力会社）/酒井/酒井 共有/自作ツール/データ移行チャンネル入れ替え'
+        m4 = '③ 「Excel出力」を押下すると、新旧サイトのデータが「ch_list.xlsm」に出力される'
+        m5 = '④ 「ch_list.xlsm」を開き、W列の「置換」に新サイトチャンネルと紐づけたい変更前チャンネル一覧の「No」を入力する'
+        m6 = '  （何も入れない場所は空白）'
+        m7 = '⑤ 「置換する直上のフォルダ～」に入れ替え前のCSVが格納されたフォルダを指定する'
+        m8 = '  （ファイル名は「FLxxx-xxxxx_○○○○_yyyyy_mm_dd」に統一すること）'
+        m9 = '⑥ 最後に残り二項目を選択し、置換開始を押下する事で置換が行われる'
+
         # ルートを作成
         root = Tk()
         # ''設定
@@ -33,55 +45,100 @@ class TkinterClass:
 ############################################################################################
 ##旧サイト指定用
 ############################################################################################
-        label1 = ttk.Label(frame1, text='旧サイト指定用「.xlsx」', padding=(5, 2))
-        label1.grid(row=0, column=0, sticky=E)
-        button = ttk.Button(frame1, text='参照')
-        button.bind('<ButtonPress>', self.old_file_dialog)
-        button.grid(row=1, column=1,sticky=E)
+        old_xlsx_frame = ttk.Frame(frame1, padding=(5, 10))
         
+        old_xlsx_frame_label = ttk.Labelframe(
+            old_xlsx_frame,
+            text='旧サイト指定用「.xlsx」',
+            padding=(10),
+            style='My.TLabelframe')
+        
+        button = ttk.Button(old_xlsx_frame_label, text='参照')
+        button.bind('<ButtonPress>', self.old_file_dialog)  
         self.old_file = tk.StringVar()
         self.old_file.set('未選択です')
-        label2 = ttk.Label(frame1,textvariable=self.old_file,width=100)
-        label2.grid(row=1, column=2,sticky=E)
+        label2 = ttk.Label(old_xlsx_frame_label, textvariable=self.old_file, foreground="blue")
+
+        old_xlsx_frame.grid(row=0, column=0, sticky=W)
+        old_xlsx_frame_label.grid(row=0, column=0, sticky=E)
+        button.grid(row=1, column=0,sticky=W)
+        label2.grid(row=1, column=1,sticky=W)
 ############################################################################################
 ##新サイト指定用
 ############################################################################################
-        label2 = ttk.Label(frame1, text='新サイト指定用「.xlsx」', padding=(5, 2))
-        label2.grid(row=3, column=0, sticky=E)
-        button = ttk.Button(frame1, text='参照')
+        new_xlsx_frame = ttk.Frame(frame1, padding=(5, 10))
+
+        new_xlsx_frame_label = ttk.Labelframe(
+            new_xlsx_frame,
+            text='新サイト指定用「.xlsx」',
+            padding=(10),
+            style='My.TLabelframe')
+        
+        button = ttk.Button(new_xlsx_frame_label, text='参照')
         button.bind('<ButtonPress>', self.new_file_dialog)
-        button.grid(row=4, column=1,sticky=E)
         
         self.new_file = tk.StringVar()
         self.new_file.set('未選択です')
-        label3 = ttk.Label(frame1,textvariable=self.new_file,width=100)
-        label3.grid(row=4, column=2,sticky=E)
+        label3 = ttk.Label(new_xlsx_frame_label,textvariable=self.new_file, foreground="blue")
+        
+        #Layout
+        new_xlsx_frame.grid(row=1,column=0,sticky=W)
+        new_xlsx_frame_label.grid(row=0, column=0, sticky=E)
+        button.grid(row=1, column=0,sticky=W)
+        label3.grid(row=1, column=1,sticky=W)
+       
 ############################################################################################
 ##書き込み用
 ############################################################################################
-        label2 = ttk.Label(frame1, text='書き込み用「.xlsm」', padding=(5, 2))
-        label2.grid(row=6, column=0, sticky=E)
-        button = ttk.Button(frame1, text='参照')
-        button.bind('<ButtonPress>', self.edit_file_dialog)
-        button.grid(row=7, column=1,sticky=E)
+        # Frame
+        xlsm_frame = ttk.Frame(frame1, padding=(5, 10))
+
+        label2 = ttk.Labelframe(
+            xlsm_frame,
+            text='書き込み用「.xlsm」',
+            padding=(10),
+            style='My.TLabelframe')
+
         
+        button = ttk.Button(label2, text='参照')
+        button.bind('<ButtonPress>', self.edit_file_dialog)
         self.target_file = tk.StringVar()
         self.target_file.set('未選択です')
-        label3 = ttk.Label(frame1,textvariable=self.target_file,width=100)
-        label3.grid(row=7, column=2,sticky=E)
+
+        label3 = ttk.Label(label2,textvariable=self.target_file, foreground="blue")
+
+
+        xlsm_frame.grid(row=2,column=0,sticky=W)
+        label2.grid(row=0, column=0, sticky=E)
+        button.grid(row=1, column=0,sticky=W)
+        label3.grid(row=1, column=1,sticky=W)
 ############################################################################################
 ##置換する「data」ファイル
 ############################################################################################
-        label4 = ttk.Label(frame1, text='置換するファイル直上の「フォルダ」\n（この下に「data」フォルダができる）', padding=(5, 2))
-        label4.grid(row=9, column=0, sticky=E)
-        button = ttk.Button(frame1, text='参照')
+        # Frame
+        data_folder_frame = ttk.Frame(frame1, padding=(5, 10))
+        
+
+        label4 = ttk.Labelframe(
+            data_folder_frame,
+            text='置換するファイル直上の「フォルダ」（この下に「data」フォルダができる）',
+            padding=(10),
+            style='My.TLabelframe')
+        
+        
+        
+        button = ttk.Button(label4, text='参照')
         button.bind('<ButtonPress>', self.data_folder_dialog)
-        button.grid(row=10, column=1,sticky=E)
         
         self.data_folder = tk.StringVar()
         self.data_folder.set('未選択です')
-        label5 = ttk.Label(frame1,textvariable=self.data_folder,width=100)
-        label5.grid(row=10, column=2,sticky=E)
+        label5 = ttk.Label(label4,textvariable=self.data_folder, foreground="blue")
+
+
+        data_folder_frame.grid(row=3,column=0,sticky=W)
+        label4.grid(row=0, column=0, sticky=E)
+        button.grid(row=1, column=0,sticky=W)
+        label5.grid(row=1, column=1,sticky=W)
 
 ############################################################################################
 ##取得範囲外のデータ形式
@@ -120,7 +177,7 @@ class TkinterClass:
             variable=self.v2)
 
         # Layout
-        oprionFrame2.grid(row=11,column=1)
+        oprionFrame2.grid(row=5,column=0,sticky=W)
         label_frame2.grid(row=0, column=0)
         rb3.grid(row=0, column=0) # LabelFrame
         rb4.grid(row=0, column=1) # LabelFrame  
@@ -164,7 +221,7 @@ class TkinterClass:
             variable=self.v3)
     
         # Layout
-        oprionFrame3.grid(row=11,column=0)
+        oprionFrame3.grid(row=6,column=0,sticky=W)
         label_frame3.grid(row=0, column=0)
         rb6.grid(row=0, column=0) # LabelFrame
         rb7.grid(row=0, column=1) # LabelFrame  
@@ -172,11 +229,65 @@ class TkinterClass:
 
         endform = ttk.Frame(frame1, padding=(0, 5))
         endform.grid(column=1, sticky=W)
+
+############################################################################################
+##簡易手順
+############################################################################################
+        # Frame
+        manual = ttk.Frame(frame1, padding=(5, 10))
+        
+
+        manual_tital = ttk.Labelframe(
+            manual,
+            text='簡易手順',
+            padding=(10),
+            style='My.TLabelframe')
+        
+        manual1 = ttk.Label(
+            manual_tital,
+            text=m1)
+        manual2 = ttk.Label(
+            manual_tital,
+            text=m2)
+        
+        manual3 = ttk.Entry(manual_tital,width=100)
+        manual3.insert(0,m3)
+
+        manual4 = ttk.Label(
+            manual_tital,
+            text=m4)
+        manual5 = ttk.Label(
+            manual_tital,
+            text=m5)
+        manual6 = ttk.Label(
+            manual_tital,
+            text=m6)
+        manual7 = ttk.Label(
+            manual_tital,
+            text=m7)
+        manual8 = ttk.Label(
+            manual_tital,
+            text=m8)
+        manual9 = ttk.Label(
+            manual_tital,
+            text=m9)
+
+        manual.grid(row=8,column=0,sticky=W)
+        manual_tital.grid(row=0, column=0, sticky=E)
+        manual1.grid(row=1, column=0,sticky=W)
+        manual2.grid(row=2, column=0,sticky=W)
+        manual3.grid(row=3, column=0,sticky=W)
+        manual4.grid(row=4, column=0,sticky=W)
+        manual5.grid(row=5, column=0,sticky=W)
+        manual6.grid(row=6, column=0,sticky=W)
+        manual7.grid(row=7, column=0,sticky=W)
+        manual8.grid(row=8, column=0,sticky=W)
+        manual9.grid(row=9, column=0,sticky=W)
 ############################################################################################
 ##　ボタン
 ############################################################################################
-        endform = ttk.Frame(frame1, padding=(0, 5))
-        endform.grid(column=6, sticky=W)
+        endform = ttk.Frame(manual, padding=(0, 5))
+        endform.grid(column=0, sticky=E)
         button1 = ttk.Button(endform, text='Excel出力')
         button1.bind('<ButtonPress>',self.createNewExcel)
         button1.pack(side=LEFT)
@@ -195,6 +306,7 @@ class TkinterClass:
         button3 = ttk.Button(endform, text='閉じる', command=sys.exit)
         button3.pack(side=LEFT)
 ############################################################################################
+
         root.mainloop()
     
     def old_file_dialog(self, event):
@@ -234,68 +346,53 @@ class TkinterClass:
 
     #shift_ch指定用のExcel作成
     def createNewExcel(self, event):
-        error_flg = False
-        ###################################################
-        # 初期値の設定 #
-        ###################################################
-        #pathの指定
-        #dataディレクトリの場所
+        #旧サイトxlsx
         old_xlsx = self.old_file.get()
+        #新サイトxlsx
         new_xlsx = self.new_file.get()
+        #書き込み用xlsm
         target_xlsm = self.target_file.get()
-        ###################################################
-
         try:
-            if not error_flg:
-                if app_from_xlsx.main(old_xlsx,new_xlsx,target_xlsm) :
-                    #app.main(dir_name,ch_list,none_select_column,none_valiable_column,offset,id,password)
-                    messagebox.showinfo('完了', '完了しました。\n内容を確認してください。')
-                else:
-                    messagebox.showerror('エラー', 'Excel作成処理中にエラーが発生しました。')
+            if app_from_xlsx.main(old_xlsx,new_xlsx,target_xlsm) :
+                show_info('完了しました。\n内容を確認してください。')
         except:
             ex = traceback.format_exc()
-            messagebox.showerror('エラー', '処理中にエラーが発生しました。\n\n'+ex)
+            show_error('処理中にエラーが発生しました。\n\n'+ex)
     
     #ファイル振り分け処理
     def move_files(self,event):
-        #csvの位置を指定
-        data_folder = self.data_folder.get()
-        #振り分け実行
-        aline_files.main(data_folder)
+        try:
+            #csvの位置を指定
+            data_folder = self.data_folder.get()
+            #振り分け実行
+            aline_files.main(data_folder)
+        except:
+            ex = traceback.format_exc()
+            show_error('振り分け処理中にエラーが発生しました\n\n'+ex)
 
 
     #置換処理
     def try_ch_shift(self, event):
-        error_flg = False
-        ###################################################
-        # 初期値の設定 #
-        ###################################################
-        #pathの指定
-        #dataディレクトリの場所
+        #書き込んだxlsm
         target_xlsm = self.target_file.get()
+        #dataフォルダの位置
         data_folder = self.data_folder.get()
-
         #取得範囲外のデータ形式
         none_select_column =  self.v2.get()
-        
-        #入れ替え時対象の数値がnull or 空の場合に格納する値の指定
+        #入れ替え時対象の数値が空の場合に格納する値の指定
         none_valiable_column = self.v3.get()
-        ###################################################
+
         try:
             all_data = get_select_ch.main(target_xlsm)
         except:
             ex = traceback.format_exc()
-            messagebox.showerror('エラー', 'Excel読み出し処理中にエラーが発生しました。\n\n'+ex)
-
+            show_error('Excel読み出し処理中にエラーが発生しました。\n\n'+ex)
         if all_data:
             try:
                 ch_shift.main(data_folder,all_data,none_select_column,none_valiable_column)
-                messagebox.showinfo('完了', '完了しました。\n内容を確認してください。')
             except:
                 ex = traceback.format_exc()
-                messagebox.showerror('エラー', '置換処理中にエラーが発生しました。\n\n'+ex)
-
-    #def aline_files(self,event):
+                show_error('置換処理中にエラーが発生しました。\n\n'+ex)
 
     
 def show_error(message):
