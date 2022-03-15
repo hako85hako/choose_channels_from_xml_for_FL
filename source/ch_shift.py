@@ -5,7 +5,7 @@ from glob import glob
 
 import frame
 
-def main(dir_name,all_data,none_select_column,none_valiable_column):
+def main(dir_name,all_data,none_select_column,none_valiable_column,use_coefficient_flg):
     #初期設定
     faile_ch_exchange = 'チャンネル置換中にエラーが発生しました'
     not_read_file = 'CSVファイルを読み込めません'
@@ -21,7 +21,7 @@ def main(dir_name,all_data,none_select_column,none_valiable_column):
 
     for file in files:
         data = []
-        #ファイル名作成用########################################################
+        #ファイル名作成用
         FL_ID = all_data[0][0]
         dirname = os.path.basename(file)
         dirname_year = dirname[0:4]
@@ -29,7 +29,6 @@ def main(dir_name,all_data,none_select_column,none_valiable_column):
         dirname = FL_ID + '_' + dirname_year + '-' + dirname_month + '-01'
         #以下形式で出力される
         #FL999-99999_0000_2021-01-01
-        #####################################################################
         
          #編集用パス指定
         csv_paths = glob(f'{file}/*.csv')
@@ -48,18 +47,29 @@ def main(dir_name,all_data,none_select_column,none_valiable_column):
                 #結果の入子
                 items = []
                 try:
-                    for i in range(int(old_file_offset)):
-                        #offset8→7の場合
-                        if old_file_offset > new_file_offset:
-                            if i == 8 :
+                    for i in range(7):#range(int(old_file_offset)-1):
+                        #print(i)
+                        if i == 6 :
+                            #offsetが同じ場合の場合
+                            if old_file_offset == new_file_offset:
+                                item = row[i]
+                                items += [item]
                                 break
-                        item = row[i]
-                        items += [item]
-                        #offset7→8の場合
-                        if old_file_offset < new_file_offset:
-                            if i == 7 :
+                            #offset8→7の場合
+                            elif old_file_offset > new_file_offset:
+                                item = row[i]
+                                items += [item]
+                                break
+                            #offset7→8の場合
+                            elif old_file_offset < new_file_offset:
+                                item = row[i]
+                                items += [item]
                                 item = ""
                                 items += [item]
+                                break
+                        else:
+                            item = row[i]
+                            items += [item]
                 except:
                     return frame.show_error(offset_write_error)
 
@@ -83,11 +93,13 @@ def main(dir_name,all_data,none_select_column,none_valiable_column):
                             #チャンネルの指定あり
                             #指定したチャンネルの中身の判定
                             try:
-                                shift_num = shift_num + old_file_offset -1
+                                shift_num = shift_num + old_file_offset
                                 item = float(row[shift_num])
-                                #係数の処理
-                                item = ( item / old_slop ) - old_intercept
-                                item = round(item,7)#DC対応のため、小数点以下7桁まで取得
+                                #係数有効flgの確認
+                                if use_coefficient_flg == "1":
+                                    #係数の処理
+                                    item = ( item / old_slop ) - old_intercept
+                                    item = round(item,7)#DC対応のため、小数点以下7桁まで取得
                                 #整数であれば小数点以下を削除
                                 if(item.is_integer()):
                                     item = int(item)

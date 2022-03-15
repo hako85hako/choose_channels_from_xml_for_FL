@@ -28,7 +28,7 @@ class TkinterClass:
         m6 = '  （何も入れない場所は空白）'
         m7 = '⑤ 「置換する直上のフォルダ～」に入れ替え前のCSVが格納されたフォルダを指定する'
         m8 = '  （ファイル名は「FLxxx-xxxxx_○○○○_yyyyy_mm_dd」に統一すること）'
-        m9 = '⑥ 最後に残り二項目を選択し、置換開始を押下する事で置換が行われる'
+        m9 = '⑥ 最後に残り3項目を選択し、置換開始を押下する事で置換が行われる'
 
         # ルートを作成
         root = Tk()
@@ -231,6 +231,44 @@ class TkinterClass:
         endform.grid(column=1, sticky=W)
 
 ############################################################################################
+##係数を有効or無効
+############################################################################################
+        # Frame
+        oprionFrame4 = ttk.Frame(frame1, padding=(5, 10))
+        # Style - Theme
+        #ttk.Style().theme_use('classic')
+        # Label Frame
+        label_frame4 = ttk.Labelframe(
+            oprionFrame4,
+            text='係数の有効化（mame2→mame2であればOFF）',
+            padding=(10),
+            style='My.TLabelframe')
+
+        # Radiobutton 1
+        self.v4 = StringVar()
+        rb9 = ttk.Radiobutton(
+            label_frame4,
+            text='ON',
+            value=True,
+            variable=self.v4)
+
+        # Radiobutton 2
+        rb10 = ttk.Radiobutton(
+            label_frame4,
+            text='OFF',
+            value=False,
+            variable=self.v4)
+    
+        # Layout
+        oprionFrame4.grid(row=8,column=0,sticky=W)
+        label_frame4.grid(row=0, column=0)
+        rb9.grid(row=0, column=0) # LabelFrame
+        rb10.grid(row=0, column=1) # LabelFrame  
+
+        endform = ttk.Frame(frame1, padding=(0, 5))
+        endform.grid(column=1, sticky=W)
+
+############################################################################################
 ##簡易手順
 ############################################################################################
         # Frame
@@ -272,7 +310,7 @@ class TkinterClass:
             manual_tital,
             text=m9)
 
-        manual.grid(row=8,column=0,sticky=W)
+        manual.grid(row=10,column=0,sticky=W)
         manual_tital.grid(row=0, column=0, sticky=E)
         manual1.grid(row=1, column=0,sticky=W)
         manual2.grid(row=2, column=0,sticky=W)
@@ -373,14 +411,16 @@ class TkinterClass:
 
     #置換処理
     def try_ch_shift(self, event):
-        #書き込んだxlsm
+        # 書き込んだxlsm
         target_xlsm = self.target_file.get()
-        #dataフォルダの位置
+        # dataフォルダの位置
         data_folder = self.data_folder.get()
-        #取得範囲外のデータ形式
+        # 取得範囲外のデータ形式
         none_select_column =  self.v2.get()
-        #入れ替え時対象の数値が空の場合に格納する値の指定
+        # 入れ替え時対象の数値が空の場合に格納する値の指定
         none_valiable_column = self.v3.get()
+        # 係数の有効化
+        use_coefficient_flg = self.v4.get()
 
         try:
             all_data = get_select_ch.main(target_xlsm)
@@ -389,7 +429,7 @@ class TkinterClass:
             show_error('Excel読み出し処理中にエラーが発生しました。\n\n'+ex)
         if all_data:
             try:
-                ch_shift.main(data_folder,all_data,none_select_column,none_valiable_column)
+                ch_shift.main(data_folder,all_data,none_select_column,none_valiable_column,use_coefficient_flg)
             except:
                 ex = traceback.format_exc()
                 show_error('置換処理中にエラーが発生しました。\n\n'+ex)
