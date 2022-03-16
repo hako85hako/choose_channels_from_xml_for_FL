@@ -112,7 +112,6 @@ def main(dir_name,all_data,none_select_column,none_valiable_column,use_coefficie
                         else:
                             item = none_select_column
                     except:
-                        return frame.show_error(faile_ch_exchange)
                         item = none_valiable_column
                     items += [item]
                 data += [items]

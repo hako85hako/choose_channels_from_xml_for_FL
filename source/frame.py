@@ -24,12 +24,12 @@ class TkinterClass:
         m2 = '② 以下のPathより「ch_list.xlsm」をローカルにコピーし、書き込み用「.xlsm」に指定する'
         m3 = '/fl1/share/部署別フォルダー/技術・生産管理/社員（協力会社）/酒井/酒井 共有/自作ツール/データ移行チャンネル入れ替え'
         m4 = '③ 「Excel出力」を押下すると、新旧サイトのデータが「ch_list.xlsm」に出力される'
-        m5 = '④ 「ch_list.xlsm」を開き、W列の「置換」に新サイトチャンネルと紐づけたい変更前チャンネル一覧の「No」を入力する'
-        m6 = '  （何も入れない場所は空白）'
-        m7 = '⑤ 「置換する直上のフォルダ～」に入れ替え前のCSVが格納されたフォルダを指定する'
-        m8 = '  （ファイル名は「FLxxx-xxxxx_○○○○_yyyyy_mm_dd」に統一すること）'
-        m9 = '⑥ 最後に残り3項目を選択し、置換開始を押下する事で置換が行われる'
-
+        m5 = '※「.xlsx」がなかった場合はJobconもしくは各Managerを参考に手入力'
+        m6 = '④ 「ch_list.xlsm」を開き、W列の「置換」に新サイトチャンネルと紐づけたい変更前チャンネル一覧の「No」を入力する'
+        m7 = '  （何も入れない場所は空白）'
+        m8 = '⑤ 「置換する直上のフォルダ～」に入れ替え前のCSVが格納されたフォルダを指定する'
+        m9 = '  （ファイル名は「FLxxx-xxxxx_○○○○_yyyyy_mm_dd」に統一すること）'
+        m10 = '⑥ 最後に残り3項目を選択し、置換開始を押下する事で置換が行われる'
         # ルートを作成
         root = Tk()
         # ''設定
@@ -309,7 +309,9 @@ class TkinterClass:
         manual9 = ttk.Label(
             manual_tital,
             text=m9)
-
+        manual10 = ttk.Label(
+            manual_tital,
+            text=m10)
         manual.grid(row=10,column=0,sticky=W)
         manual_tital.grid(row=0, column=0, sticky=E)
         manual1.grid(row=1, column=0,sticky=W)
@@ -321,6 +323,7 @@ class TkinterClass:
         manual7.grid(row=7, column=0,sticky=W)
         manual8.grid(row=8, column=0,sticky=W)
         manual9.grid(row=9, column=0,sticky=W)
+        manual10.grid(row=10, column=0,sticky=W)
 ############################################################################################
 ##　ボタン
 ############################################################################################

@@ -43,27 +43,30 @@ def main(old_xlsx,new_xlsx,target_xlsm):
     not_correct_target_file = '正しい.xlsxファイルを指定してください'
     not_found_write_file = '書き込む.xlsmファイルがありません'
     write_file_two_or_more = '書き込み対象の.xlsmファイルが2個以上存在します'
+    save_failed_error = '保存処理に失敗しました。\n指定したExcelを開いていないか確認してください。'
     unexpected_error = '予期せぬエラーです。管理者にご相談ください。'
     #############################################################
     try:
         #ファイル指定
-        target_xlsx_names = []
-        if not old_xlsx and not new_xlsx:
-            frame.show_error(not_found_target_file)
-            return False
-        else:
-            target_xlsx_names += [old_xlsx]
-            target_xlsx_names += [new_xlsx]
+        target_xlsx_names = [old_xlsx,new_xlsx]
 
         for target_xlsx_name in target_xlsx_names:
             #初回（旧サイトファイル判定用インクリメント）
             first_flg += 1
+            #ファイルの存在判定
+            if target_xlsx_name == "選択をキャンセルしました" or target_xlsx_name == "未選択です":
+                continue
             #オフセットデータ初期化
             offset_data = 0
             #target_sheetの有無確認用
             count_target_sheet = 0
-            #sheet_namesメソッドでExcelブック内の各シートの名前をリストで取得できる
-            input_sheet_names = pd.ExcelFile(target_xlsx_name).sheet_names
+            try:
+                #sheet_namesメソッドでExcelブック内の各シートの名前をリストで取得できる
+                input_sheet_names = pd.ExcelFile(target_xlsx_name).sheet_names
+            except:
+                #ファイルが存在しない場合error
+                frame.show_error(not_found_target_file)
+                return False
             #格納先作成
             datas = dict()
             
@@ -123,9 +126,15 @@ def main(old_xlsx,new_xlsx,target_xlsm):
                     sheet.cell(column=3, row=(row_offset+index), value=get_data[1][column_1])
                     sheet.cell(column=12, row=(row_offset+index), value=round(get_data[1][column_3],3))
                     sheet.cell(column=13, row=(row_offset+index), value=round(get_data[1][column_4],3))
-                sheet.cell(column=24, row=11, value=offset_data)
-                # 保存
-                wb.save(target_xlsm_name)
+                sheet.cell(column=12, row=11, value=offset_data)
+                try:
+                    # 保存
+                    wb.save(target_xlsm_name)
+                except:
+                    # 保存処理が失敗した場合
+                    frame.show_error(save_failed_error)
+                    return False
+
             elif after in get_datas:          
                 #xls book Open (xls, xlsxのどちらでも可能)
                 input_book = pd.ExcelFile(target_xlsx_name)
@@ -154,9 +163,15 @@ def main(old_xlsx,new_xlsx,target_xlsm):
                     sheet.cell(column=25, row=(row_offset+index), value=round(get_data[1][column_4],3))
                 sheet.cell(column=5, row=2, value=FL_ID)
                 sheet.cell(column=12, row=2, value=password)
-                sheet.cell(column=12, row=11, value=offset_data)
-                # 保存
-                wb.save(target_xlsm_name)
+                sheet.cell(column=24, row=11, value=offset_data)
+                
+                try:
+                    # 保存
+                    wb.save(target_xlsm_name)
+                except:
+                    # 保存処理が失敗した場合
+                    frame.show_error(save_failed_error)
+                    return False
             else:
                 frame.show_error(unexpected_error)
                 return False
